@@ -1,7 +1,15 @@
 #!/usr/bin/env python3
-# Pygame basics to set up window
+
+# Script Name		: faceCrusher.py
+# Author			: David Bridges
+# Email				: david-bridges@hotmail.co.uk
+# Created			: 10th November 2016
+# Last Modified		: 10th October 2016
+# Version			: 1.0
+# Description		: A simple pyGame in development
 
 import pygame
+
 
 # First thing to do, is initialise pygame
 pygame.init()
