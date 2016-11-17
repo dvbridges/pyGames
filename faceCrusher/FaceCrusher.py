@@ -17,6 +17,7 @@ class Player(pygame.sprite.Sprite):
         super(Player, self).__init__(*groups)
         self.image = pygame.image.load('face.png')
         self.rect = pygame.rect.Rect((320, 240), self.image.get_size())
+        self.rectmouth = pygame.rect.Rect((360, 270), (30,30))
         self.is_dead = False
 
     def update(self, dt, game):
@@ -25,8 +26,12 @@ class Player(pygame.sprite.Sprite):
         key = pygame.key.get_pressed()
         if key[pygame.K_LEFT]:
             self.rect.x -= 300 * dt
+            self.rectmouth.x-=300 * dt
+            self.image = pygame.image.load('face.png')
         if key[pygame.K_RIGHT]:
             self.rect.x += 300 * dt
+            self.rectmouth.x+=300 * dt
+            self.image = pygame.image.load('face_right.png')
         if key[pygame.K_UP]:
             self.rect.y -= 300 * dt
         if key[pygame.K_DOWN]:
@@ -108,11 +113,12 @@ class Game(object):
 
             if self.player.is_dead:
             	self.player.image = pygame.image.load('deadface.png')
-            	gameover.setFont(screen)
-            	channela=self.explosion.play()
-            	
             	sprites.draw(screen)
             	pygame.display.flip()
+            	
+            	gameover.setFont(screen)
+            	
+            	channela=self.explosion.play()
             	while channela.get_busy():
             		pygame.time.delay(100)
             		time.sleep(2)
@@ -121,5 +127,5 @@ class Game(object):
 if __name__ == '__main__':
     pygame.init()
     pygame.mixer.init()
-    screen = pygame.display.set_mode((640, 480))
+    screen = pygame.display.set_mode((640, 480),pygame.FULLSCREEN)
     Game().main(screen)

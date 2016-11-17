@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Script Name		: faceEater.py
+# Script Name		: faceEateradg.py
 # Author			: David Bridges
 # Email				: david-bridges@hotmail.co.uk
 # Created			: 10th November 2016
