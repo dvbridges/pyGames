@@ -1,12 +1,8 @@
-#PyGAMES
-
+# pyGAMES
 These games are in progress.
 
-#FaceCrusher
+## FaceCrusher
+The original concept, just a game of dodging objects that will crush your face.
 
-The original concept, just a game of dodging things that want to crush your face
-
-#FaceEater
-
-The new concept, a game about healthy eating. The face will eat and gain unhealthy weight when 
-consuming junk. Muscles will appear with more movement and healthier eating. 
+## FaceEater
+The new concept, a game about healthy eating to make visible the dangers of unhealthy lifestyle choices. The face will eat and gain unhealthy weight when consuming junk. More athletic physique will become obvious with more movement and healthier eating. 
