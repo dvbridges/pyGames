@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-import pygame
+import pygame, os, random
 from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
-# Note, vertices are (A,B,C,D,E,F,G,H) or (0,1,2,3,4,5,6,7). Positive x,y,z point right, up, backwards, respectively.
+# Note, vertices are (0,1,2,3,4,5,6,7). Positive x,y,z point right, up, backwards, respectively.
 
 vertices = (
 	(1,-1,1),
@@ -72,42 +72,50 @@ def Cube():
 	glEnd()
 
 def main():
+	os.environ['SDL_VIDEO_CENTERED'] = '1'
 	pygame.init()
 	display = (1000,700)
 	pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
 	gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
-	glTranslatef(0.0,0.0, -10)
-	glRotate(15,3,3,2)
-	x,y,z = .1,.1,.1 # movement increments
+	glTranslatef(random.randrange(-5,5),random.randrange(-5,5), -50) # translate cube location
+	glRotate(0,0,0,0) # Rotate cube
+	x_move,y_move,z_move = 0,0,0
+	move_inc = .3
+
+	object_passed = False
+
 	# Start Pygame event loop
-	while True:
+	while not object_passed:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				pygame.quit()
 				quit()
-
 			if event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_LEFT:
-					glTranslatef(-x,0,0)
+					x_move=move_inc
 				if event.key == pygame.K_RIGHT:
-					glTranslatef(x,0,0)
+					x_move=-move_inc
 				if event.key == pygame.K_UP:
-					glTranslatef(0,y,0)
+					y_move=-move_inc
 				if event.key == pygame.K_DOWN:
-					glTranslatef(0,-y,0)
-			# Add zoom
-			if event.type == pygame.MOUSEBUTTONDOWN:
-				if event.button == 4:
-					glTranslatef(0,0,z)
-				if event.button == 5:
-					glTranslatef(0,0,-z)
-		# glRotate(1,3,3,2)
+					y_move=move_inc
+			if event.type == pygame.KEYUP:
+				x_move,y_move,z_move = 0,0,0
+
+		Cube_loc = glGetDoublev(GL_MODELVIEW_MATRIX) # get cube spatial locations
+		camera_x = Cube_loc[3][0]
+		camera_y = Cube_loc[3][1]
+		camera_z = Cube_loc[3][2]
+		glTranslatef(x_move,y_move, .6)
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 		Cube()
 		pygame.display.flip()
-		pygame.time.wait(10)
-	
 
+		if camera_z <=0:
+			object_passed = True
 
 if __name__ == "__main__":
-	main()
+	for runs in range(10):
+		main()
+		glLoadIdentity()
+
