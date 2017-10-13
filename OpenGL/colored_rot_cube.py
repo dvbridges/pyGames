@@ -1,0 +1,95 @@
+#!/usr/bin/env python
+import pygame
+from pygame.locals import *
+from OpenGL.GL import *
+from OpenGL.GLU import *
+
+# Note, vertices are (A,B,C,D,E,F,G,H) or (0,1,2,3,4,5,6,7). Positive x,y,z point right, up, backwards, respectively.
+
+vertices = (
+	(1,-1,1),
+	(-1,-1,1),
+	(-1,1,1),
+	(1,1,1),
+	(1,-1,-1),
+	(-1,-1,-1),
+	(-1,1,-1),
+	(1,1,-1),)
+
+edges = (
+	(0,1),
+	(0,3),
+	(0,4),
+	(2,1),
+	(2,3),
+	(2,6),
+	(5,1),
+	(5,4),
+	(5,6),
+	(7,3),
+	(7,4),
+	(7,6))
+
+surfaces = (
+	(0,1,2,3),
+	(1,2,6,5),
+	(0,3,7,4),
+	(0,1,5,4),
+	(2,3,7,6),
+	(4,5,6,7),
+	)
+
+surface_colors = (
+	(.5,1,1),
+	(1,.1,0),
+	(1,0,1),
+	(0,0,.5),
+	(0,1,1),
+	(1,0.5,1),
+	(.5,1,1),
+	(1,1,0),
+	(1,0,1),
+	(0,0,1),
+	(0,1,1),
+	(1,0.5,1),
+	)
+
+def Cube():
+
+	glBegin(GL_QUADS)
+	for surface in surfaces:
+		# glColor3fv(surface_colors[surfaces.index(surface)]) ## colors based on face
+		for vertex in surface:
+			glColor3fv(surface_colors[vertex]) # colours based on vertex
+			glVertex3fv(vertices[vertex])
+	glEnd()
+
+
+	glBegin(GL_LINES)
+	for edge in edges:
+		for vertex in edge:
+			glVertex3fv(vertices[vertex])
+	glEnd()
+
+def main():
+	pygame.init()
+	display = (1000,700)
+	pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
+	gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
+	glTranslatef(0.0,0.0, -5)
+	# Start Pygame event loop
+	while True:
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				pygame.quit()
+				quit()
+		glRotate(1,3,3,2)
+		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+		Cube()
+		pygame.display.flip()
+		pygame.time.wait(10)
+	
+
+
+if __name__ == "__main__":
+	main()
