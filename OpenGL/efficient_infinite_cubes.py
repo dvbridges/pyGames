@@ -46,22 +46,27 @@ def Cube_color():
 	surface_colors=[(random.random(),random.random(),random.random()) for x in range(12)]
 	return surface_colors
 
-def Cube_list(n, max_distance):
+def Cube_list(n, max_distance, min_distance):
 	"""
 	Cretes dictionary of n cubes
 	"""
 	cube_dict = {}
 	for cubes in range(n):
-		cube_dict[cubes]=set_vertices(max_distance)
+		cube_dict[cubes]=set_vertices(max_distance, min_distance)
 	return cube_dict
 
-def set_vertices(max_distance):
+def set_vertices(max_distance, min_distance):
 	"""
 	Set vertices for each cube
 	"""
-	x_value_change = random.randrange(-10,10)
-	y_value_change = random.randrange(-10,10)
-	z_value_change = random.randrange(-1*max_distance,-20)
+	Cube_loc = glGetDoublev(GL_MODELVIEW_MATRIX) # get cube spatial locations
+	camera_x = -1*int(Cube_loc[3][0])
+	camera_y = -1*int(Cube_loc[3][1])
+	distance = 20
+
+	x_value_change = random.randrange(int(camera_x-distance),int(camera_x+distance))
+	y_value_change = random.randrange(int(camera_y-distance),int(camera_y+distance))
+	z_value_change = random.randrange(-1*max_distance,min_distance)
 	new_vertices=[]
 	for vert in vertices:
 		new_x=vert[0]+x_value_change
@@ -89,7 +94,7 @@ def Cube(colors=Cube_color(),vertices=vertices):
 			glVertex3fv(vertices[vertex])
 	glEnd()
 
-def move_cube(x_move,y_move):
+def move_cube(x_move,y_move, speed):
 	"""
 	Move cube based on user input
 	"""
@@ -97,22 +102,25 @@ def move_cube(x_move,y_move):
 	camera_x = Cube_loc[3][0]
 	camera_y = Cube_loc[3][1]
 	camera_z = Cube_loc[3][2]
-	glTranslatef(x_move,y_move, .6)
-	return camera_z
+	glTranslatef(x_move,y_move, speed)
+	return camera_x,camera_y,camera_z
 
 def main():#
 	os.environ['SDL_VIDEO_CENTERED'] = '1'
 	pygame.init()
 	display = (1000,700)
+	max_distance=100
+	min_distance=-10
 	pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
-	gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
-	glTranslatef(random.randrange(-5,5),random.randrange(-5,5), -50) # translate cube location
+	pygame.display.toggle_fullscreen()
+	gluPerspective(45, (display[0]/display[1]), 0.1, max_distance)
+	glTranslatef(0,0, -50) # translate cube location
 	glRotate(0,0,0,0) # Rotate cube
 	x_move,y_move,z_move = 0,0,0
 	move_inc = .3
-	max_distance=100
-	number_of_cubes=30
-	cube_dict=Cube_list(number_of_cubes,max_distance)
+	
+	number_of_cubes=20
+	cube_dict=Cube_list(number_of_cubes,max_distance,min_distance)
 
 	# Start Pygame event loop
 	while True:
@@ -129,15 +137,23 @@ def main():#
 					y_move=-move_inc
 				if event.key == pygame.K_DOWN:
 					y_move=move_inc
+				if event.key == pygame.K_ESCAPE:
+					pygame.quit()
+					quit()
 			if event.type == pygame.KEYUP:
 				x_move,y_move,z_move = 0,0,0
 
-		camera_z=move_cube(x_move,y_move)
+		camera_z=move_cube(x_move,y_move,2)[2]
 
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-
-		for each_cube in cube_dict:
+		# delete_list=[]
+		for each_cube in cube_dict: #create cubes from dict
 			Cube(vertices=cube_dict[each_cube])
+
+		for each_cube in cube_dict: #reset distance of cube
+			if camera_z <= cube_dict[each_cube][0][2]:
+				cube_dict[each_cube]=set_vertices(int(-1*(camera_z-(max_distance*2))),int(camera_z-max_distance/2))
+
 		pygame.display.flip()
 
 		if camera_z <=0:
@@ -148,3 +164,4 @@ if __name__ == "__main__":
 	for runs in range(10):
 		main()
 		glLoadIdentity()
+
